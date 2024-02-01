@@ -9,6 +9,8 @@ staffCanv.height = 1600
 overlayCanv.height = 1600
 
 var currentChord = NaN
+var overlayDrawn = false
+
 
 window.addEventListener("resize", canvResize())
 
@@ -33,19 +35,22 @@ function staffDraw() {
     staff.closePath();
 }
 
-function drawOverlay(staff, n, pos) {
-    overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+function drawOverlay(chord, pos) {
+    overlayDrawn=true
     overlay.strokeStyle = "rgba(0, 0, 0, 0)"
     overlay.fillStyle = "rgba(255, 255, 0, 0.4)";
     overlay.beginPath();
-    overlay.fillRect(384 + (320*n), 300 + (704*staff), 96, 296)
-    overlay.moveTo(432 + (320*n), 300 + (704*staff))
-    overlay.arc(432 + (320*n), 300 + (704*staff), 48, 0, Math.PI, true);
-    overlay.moveTo(432 + (320*n), 596 + (704*staff))
-    overlay.arc(432 + (320*n), 596 + (704*staff), 48, 0, Math.PI, false);
+    overlay.fillRect(384 + (320*chord[1]), 300 + (704*chord[0]), 96, 296)
+    overlay.moveTo(432 + (320*chord[1]), 300 + (704*chord[0]))
+    overlay.arc(432 + (320*chord[1]), 300 + (704*chord[0]), 48, 0, Math.PI, true);
+    overlay.moveTo(432 + (320*chord[1]), 596 + (704*chord[0]))
+    overlay.arc(432 + (320*chord[1]), 596 + (704*chord[0]), 48, 0, Math.PI, false);
     overlay.fill();
     overlay.stroke()
+}
 
+function removeOverlay(chord) {
+    overlay.clearRect(384 + (320*chord[1]),  108 + (704*chord[0]), 96, 680);
 }
 function canvResize() { 
     [staffCanv, overlayCanv].forEach(element => {
@@ -64,14 +69,32 @@ staffCanv.addEventListener('mousemove', function(e) {
     if(pos['y'] >= 172 && (pos['y']-172) % 724 <= 512) {
         currentLine = (Math.floor((pos['y'] - 172)/64) % 11)
         if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
-            currentChord = Math.floor((pos['x'] - (432-margin))/320)
-            drawOverlay(Math.floor((pos['y']-172) / 724), currentChord)
+            currentChord = [Math.floor((pos['y']-172) / 724), Math.floor((pos['x'] - (432-margin))/320)]
+            if(typeof lastChord === "undefined") {
+                lastChord = [-1, 0]
+            }
+            if(JSON.stringify(currentChord) != JSON.stringify(lastChord)) {
+                // console.log(currentChord + '\n' + lastChord)
+                // console.log(currentChord == lastChord)
+                console.log('a')
+                removeOverlay(lastChord)
+                drawOverlay(currentChord)
+                lastChord = currentChord
+            }
         } else {
-            overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+            if(overlayDrawn) {
+                overlayDrawn=false
+                removeOverlay(lastChord)
+                lastChord = [-1, 0]
+            }
         } 
-        console.log(currentLine)
     } else {
-        overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+        if(overlayDrawn) {
+            console.log('b')
+            overlayDrawn=false
+            removeOverlay(lastChord)
+            lastChord = [-1, 0]
+        }
     }
 })
 
