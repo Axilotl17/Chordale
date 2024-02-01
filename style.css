@@ -17,8 +17,20 @@
     text-align:center;
 }
 
-body, html, #container, canvas {
+body, html, #container {
     height: 100%;
     width: 100%;
     margin: 0;
   }
+
+canvas {
+    position:relative;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    top: 0;
+    left:0;
+}
+#overlay {
+    top: -400px;
+}
