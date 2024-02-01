@@ -6,13 +6,11 @@ const overlay = overlayCanv.getContext("2d");
 staff.fillStyle = "green";
 
 staffCanv.height = 1600
-overlay.height = 1600
-staffCanv.width = (staffCanv.height/staffCanv.clientHeight)*staffCanv.clientWidth
+overlayCanv.height = 1600
 
-window.addEventListener("resize", function(){
-    staffCanv.width = (staffCanv.height/staffCanv.clientHeight)*staffCanv.clientWidth
-    staffDraw()
-})
+var currentChord = NaN
+
+window.addEventListener("resize", canvResize())
 
 function staffDraw() {
     staff.beginPath();
@@ -35,14 +33,47 @@ function staffDraw() {
     staff.closePath();
 }
 
-function drawOverlay(staff, n) {
+function drawOverlay(staff, n, pos) {
+    overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+    overlay.strokeStyle = "rgba(0, 0, 0, 0)"
+    overlay.fillStyle = "rgba(255, 255, 0, 0.4)";
     overlay.beginPath();
-    overlay.fillRect(20, 20, 40, 40)
+    overlay.fillRect(384 + (320*n), 300 + (704*staff), 96, 296)
+    overlay.moveTo(432 + (320*n), 300 + (704*staff))
+    overlay.arc(432 + (320*n), 300 + (704*staff), 48, 0, Math.PI, true);
+    overlay.moveTo(432 + (320*n), 596 + (704*staff))
+    overlay.arc(432 + (320*n), 596 + (704*staff), 48, 0, Math.PI, false);
+    overlay.fill();
     overlay.stroke()
-    overlay.fillStyle = "rgba(255, 255, 0, 0.5)";
 
 }
+function canvResize() { 
+    [staffCanv, overlayCanv].forEach(element => {
+        element.width = (element.height/element.clientHeight)*element.clientWidth
+    });
+    staffDraw()
+}
 
+staffCanv.addEventListener('mousemove', function(e) {
+    var rect = staffCanv.getBoundingClientRect();
+    pos = {
+        x: (e.clientX - rect.left) * (staffCanv.width / rect.width),
+        y: (e.clientY - rect.top) * (staffCanv.width / rect.width)
+    };
+    margin = 100
+    if(pos['y'] >= 172 && (pos['y']-172) % 724 <= 512) {
+        currentLine = (Math.floor((pos['y'] - 172)/64) % 11)
+        if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
+            currentChord = Math.floor((pos['x'] - (432-margin))/320)
+            drawOverlay(Math.floor((pos['y']-172) / 724), currentChord)
+        } else {
+            overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+        } 
+        console.log(currentLine)
+    } else {
+        overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height);
+    }
+})
 
 
 staffDraw()

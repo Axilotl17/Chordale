@@ -24,13 +24,23 @@ body, html, #container {
   }
 
 canvas {
-    position:relative;
-    height: 100%;
+    position:absolute;
+    height: 400px;
     width: 100%;
     margin: 0;
     top: 0;
     left:0;
 }
+
+#staff {
+    z-index: 0;
+}
+
 #overlay {
-    top: -400px;
+    z-index: 1;
+}
+
+.layer {
+    pointer-events:none;
+    background-color: transparent;
 }
