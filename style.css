@@ -3,23 +3,22 @@
 }
     
 #top_div {
-    height:50%;
+    height:400px;
     width:100%;
-    background-color:#009900;
     margin:auto;
     text-align:center;
+    border-bottom: black, 1px;
 }
     
 #bottom_div {
-    height:50%;
-    width:100%;
-    background-color:#990000;
+    height: calc(100% - 400px);
+    width: 100%;
     margin:auto;
     text-align:center;
-    color:#FFFFFF;
 }
 
-body, html, #container {
+body, html, #container, canvas {
     height: 100%;
+    width: 100%;
     margin: 0;
   }
