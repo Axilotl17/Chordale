@@ -74,12 +74,13 @@ staffCanv.addEventListener('mousemove', function(e) {
         y: (e.clientY - rect.top) * (staffCanv.width / rect.width)
     };
     margin = 100
-    if(pos['y'] >= 172 && (pos['y']-172) % 724 <= 512) {
+    line = (Math.floor((pos['y'] - 172)/32) % 22)
+    if(line < 0) {line = 0}
+    //if(line > 16) {line = 16}
+    console.log(line)
+    if(pos['y'] >= 140 && (pos['y']-172) % 724 <= 544) {
         if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
-            line = (Math.floor((pos['y'] - 172)/32) % 22)
-            //leeway for top and bottom notes
-            //if()
-            currentChord = [Math.floor((pos['y']-172) / 724), Math.floor((pos['x'] - (432-margin))/320), (Math.floor((pos['y'] - 172)/32) % 22)]
+            currentChord = [Math.floor((pos['y']-172) / 724), Math.floor((pos['x'] - (432-margin))/320), line]
             if(typeof lastChord === "undefined") {
                 lastChord = ""
             }
@@ -96,7 +97,7 @@ staffCanv.addEventListener('mousemove', function(e) {
             if(overlayDrawn) {
                 overlayDrawn=false
                 removeOverlay(lastChord)
-                lastChord = [-1, 0]
+                lastChord = [-1, 0, 0]
             }
         } 
 
@@ -105,7 +106,7 @@ staffCanv.addEventListener('mousemove', function(e) {
             //console.log('b')
             overlayDrawn=false
             removeOverlay(lastChord)
-            lastChord = [-1, 0]
+            lastChord = [-1, 0, 0]
         }
     }
 })
