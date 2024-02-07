@@ -11,6 +11,8 @@ overlayCanv.height = 1600
 var currentChord = NaN
 var overlayDrawn = false
 
+var score = {}
+
 
 window.addEventListener("resize", canvResize())
 
@@ -51,7 +53,6 @@ function drawOverlay(chord) {
     overlay.beginPath();
     overlay.fillStyle = "rgba(0, 0, 0, 1)";
     overlay.arc(432 + (320*chord[1]), 192 + (704*chord[0]) + (32*chord[2]), 32, 0, 2* Math.PI)
-    //console.log(432 + (320*chord[1]))
     overlay.fill();
     overlay.stroke()
     overlay.closePath();
@@ -69,47 +70,62 @@ function canvResize() {
 
 staffCanv.addEventListener('mousemove', function(e) {
     var rect = staffCanv.getBoundingClientRect();
+    var staffy
+    //var lastChord
     pos = {
         x: (e.clientX - rect.left) * (staffCanv.width / rect.width),
         y: (e.clientY - rect.top) * (staffCanv.width / rect.width)
     };
     margin = 100
-    line = (Math.floor((pos['y'] - 172)/32) % 22)
-    if(line < 0) {line = 0}
-    //if(line > 16) {line = 16}
-    console.log(line)
-    if(pos['y'] >= 140 && (pos['y']-172) % 724 <= 544) {
-        if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
-            currentChord = [Math.floor((pos['y']-172) / 724), Math.floor((pos['x'] - (432-margin))/320), line]
-            if(typeof lastChord === "undefined") {
-                lastChord = ""
-            }
-            if(JSON.stringify(currentChord) != JSON.stringify(lastChord)) {
-                // console.log(currentChord + '\n' + lastChord)
-                // console.log(currentChord == lastChord)
-                console.log('a')
-                removeOverlay(lastChord)
-                overlayDrawn=false
-                drawOverlay(currentChord)
-                lastChord = currentChord
-            }
-        } else {
-            if(overlayDrawn) {
-                overlayDrawn=false
-                removeOverlay(lastChord)
-                lastChord = [-1, 0, 0]
-            }
-        } 
+    line = Math.floor((pos['y']-16)/32)
+    staffy = Math.floor((pos['y']+16)/800)
+    line = (line % 25)
+    if(line == 24) {
+        staffy--
+    }
+    if(staffy==0) {
+        line -= 5
+        if(line>16) {
+            line = 16
+        } else if (line < 0) {
+            line = 0
+        }
+        
+    } else {
+        line -= 2
+        if(line>16) {
+            line = 16
+        } else if (line < 0) {
+            line = 0
+        }
+    }
 
+    if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
+        currentChord = [staffy, Math.floor((pos['x'] - (432-margin))/320), line]
+
+
+        if(typeof lastChord === "undefined") {
+            lastChord = ""
+        }
+        if(JSON.stringify(currentChord) != JSON.stringify(lastChord)) {
+            removeOverlay(lastChord)
+            overlayDrawn=false
+            drawOverlay(currentChord)
+            lastChord = currentChord
+
+        }
     } else {
         if(overlayDrawn) {
-            //console.log('b')
             overlayDrawn=false
             removeOverlay(lastChord)
             lastChord = [-1, 0, 0]
         }
     }
 })
+staffCanv.addEventListener('mouseleave', function() {
+    overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height)
+});
+
 
 
 staffDraw()
