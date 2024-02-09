@@ -51,7 +51,7 @@ function drawOverlay(chord) {
     overlay.stroke()
     overlay.closePath();
     overlay.beginPath();
-    overlay.fillStyle = "rgba(0, 0, 0, 1)";
+    overlay.fillStyle = "rgba(0, 0, 0, 0.65)";
     overlay.arc(432 + (320*chord[1]), 192 + (704*chord[0]) + (32*chord[2]), 32, 0, 2* Math.PI)
     overlay.fill();
     overlay.stroke()
