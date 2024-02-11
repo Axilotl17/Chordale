@@ -38,6 +38,8 @@ function staffDraw() {
 }
 
 function drawOverlay(chord) {
+    console.log(toNote(chord) + ", " + chord)
+    ledger(chord, overlay)
     overlayDrawn=true
     overlay.strokeStyle = "rgba(0, 0, 0, 0)"
     overlay.fillStyle = "rgba(255, 255, 0, 0.4)";
@@ -56,6 +58,35 @@ function drawOverlay(chord) {
     overlay.fill();
     overlay.stroke()
     overlay.closePath();
+
+
+}
+
+function ledger(chord, ctx) {
+    ctx.strokeStyle = "rgb(0, 0, 0)"
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    if(chord[2] <= 2) {
+        ctx.moveTo(384 + (320*chord[1]), 192 + (704*chord[0]) + (32*2));
+        ctx.lineTo(480 + (320*chord[1]), 192 + (704*chord[0]) + (32*2));
+        ctx.stroke()
+        if(chord[2] <= 0) {
+            ctx.moveTo(384 + (320*chord[1]), 192 + (704*chord[0]) + (32*0));
+            ctx.lineTo(480 + (320*chord[1]), 192 + (704*chord[0]) + (32*0));
+            ctx.stroke()
+        }
+    }
+    if(chord[2] >= 14) {
+        ctx.moveTo(384 + (320*chord[1]), 192 + (704*chord[0]) + (32*14));
+        ctx.lineTo(480 + (320*chord[1]), 192 + (704*chord[0]) + (32*14));
+        ctx.stroke()
+        if(chord[2] >= 16) {
+            ctx.moveTo(384 + (320*chord[1]), 192 + (704*chord[0]) + (32*16));
+            ctx.lineTo(480 + (320*chord[1]), 192 + (704*chord[0]) + (32*16));
+            ctx.stroke()
+        }
+    }
+    ctx.closePath();
 }
 
 function removeOverlay(chord) {
@@ -67,6 +98,19 @@ function canvResize() {
     });
     staffDraw()
 }
+
+function toNote(chord){
+    if(chord[0] == 0) {
+        return(String.fromCharCode(((16 - chord[2]) % 7) + 65) + Math.floor((42 - chord[2])/7))
+    } else {
+        return(String.fromCharCode(((18 - chord[2]) % 7) + 65) + Math.floor((30 - chord[2])/7))
+    }
+}
+
+// function notePos(note) {
+//     return(note[0] 
+// }
+
 
 staffCanv.addEventListener('mousemove', function(e) {
     var rect = staffCanv.getBoundingClientRect();
@@ -125,6 +169,11 @@ staffCanv.addEventListener('mousemove', function(e) {
 staffCanv.addEventListener('mouseleave', function() {
     overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height)
 });
+staffCanv.addEventListener('click', function(e) {
+    score[currentChord]
+}
+
+)
 
 
 

@@ -40,6 +40,10 @@ canvas {
     z-index: 1;
 }
 
+#notes {
+    z-index: 2;
+}
+
 .layer {
     pointer-events:none;
     background-color: transparent;
