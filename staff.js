@@ -38,7 +38,7 @@ function staffDraw() {
 }
 
 function drawOverlay(chord) {
-    console.log(toNote(chord) + ", " + chord)
+    console.log(toNote(chord) + ", " + notePos(toNote(chord)))
     ledger(chord, overlay)
     overlayDrawn=true
     overlay.strokeStyle = "rgba(0, 0, 0, 0)"
@@ -107,9 +107,49 @@ function toNote(chord){
     }
 }
 
-// function notePos(note) {
-//     return(note[0] 
-// }
+function notePos(note) {
+    let n = (note.charCodeAt(0) - 65) * 2
+    let o
+    if(n > 2) {
+        n--
+    } 
+    if(n > 7) {
+        n--
+    }
+    for (i=1; i<4; i++) {
+        if(note[i] == "#") { //if sharp
+            console.log("sharp")
+            n++
+        } else if (note[i] == "b"){
+            console.log("flat")
+            n--
+        } else {
+            console.log("no sharp")
+            o = note[i] * 12
+            break
+        } {
+    }
+    console.log(n)
+    console.log(o)
+
+
+    return(n - 3 + o) //-2 so C is the lowest
+}
+
+/*
+A  0
+A# 1
+B  2
+C  3
+C# 4
+D  5
+D# 6
+E  7
+F  8
+F# 9
+G  10
+G# 11
+*/
 
 
 staffCanv.addEventListener('mousemove', function(e) {
@@ -172,7 +212,6 @@ staffCanv.addEventListener('mouseleave', function() {
 staffCanv.addEventListener('click', function(e) {
     score[currentChord]
 }
-
 )
 
 
