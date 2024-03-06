@@ -1,14 +1,17 @@
 const staffCanv = document.getElementById("staff")
 const overlayCanv = document.getElementById("overlay")
+const notesCanv = document.getElementById("notes")
+
 
 const staff = staffCanv.getContext("2d");
 const overlay = overlayCanv.getContext("2d");
+const notes = notesCanv.getContext("2d");
 staff.fillStyle = "green";
 
 staffCanv.height = 1600
 overlayCanv.height = 1600
 
-var currentChord = NaN
+var currentPos = NaN
 var overlayDrawn = false
 
 var score = {}
@@ -58,8 +61,15 @@ function drawOverlay(chord) {
     overlay.fill();
     overlay.stroke()
     overlay.closePath();
+}
 
-
+function drawNote(chord) {
+    notes.beginPath();
+    notes.fillStyle = "rgba(0, 0, 0, 1)";
+    notes.arc(432 + (320*chord[1]), 192 + (704*chord[0]) + (32*chord[2]), 32, 0, 2* Math.PI)
+    notes.fill();
+    notes.stroke()
+    notes.closePath();
 }
 
 function ledger(chord, ctx) {
@@ -92,6 +102,12 @@ function ledger(chord, ctx) {
 function removeOverlay(chord) {
     overlay.clearRect(384 + (320*chord[1]),  108 + (704*chord[0]), 96, 680);
 }
+
+
+function removeNotes(chord) {
+    notes.clearRect(384 + (320*chord[1]),  108 + (704*chord[0]), 96, 680);
+}
+
 function canvResize() { 
     [staffCanv, overlayCanv].forEach(element => {
         element.width = (element.height/element.clientHeight)*element.clientWidth
@@ -108,47 +124,39 @@ function toNote(chord){
 }
 
 function notePos(note) {
-    let n = (note.charCodeAt(0) - 65) * 2
-    let o
-    if(n > 2) {
+    let n = (note.slice(-2, -1).charCodeAt(0) -65) * 2 - 4
+    if(n<0) {
+        n+=14
+    }
+    let o = note.slice(-1) * 12
+    if(n > 4) {
         n--
     } 
-    if(n > 7) {
+    if(n > 11) {
         n--
     }
-    for (i=1; i<4; i++) {
-        if(note[i] == "#") { //if sharp
-            console.log("sharp")
-            n++
-        } else if (note[i] == "b"){
-            console.log("flat")
-            n--
-        } else {
-            console.log("no sharp")
-            o = note[i] * 12
-            break
-        } {
+    if(note[0] == "#") { //if sharp
+        console.log("sharp") 
+        n++
+    } else if (note[0] == "b"){
+        n--
     }
-    console.log(n)
-    console.log(o)
-
-
-    return(n - 3 + o) //-2 so C is the lowest
+    return(n+o) //-3? so C is the lowest
 }
 
 /*
-A  0
-A# 1
-B  2
-C  3
-C# 4
-D  5
-D# 6
-E  7
-F  8
-F# 9
-G  10
-G# 11
+C  0
+C# 1
+D  2
+D# 3
+E  4
+F  5
+F# 6
+G  7
+G# 8
+A  9
+A# 10
+B  11
 */
 
 
@@ -185,17 +193,17 @@ staffCanv.addEventListener('mousemove', function(e) {
     }
 
     if(pos['x'] >= (432-margin) && (pos['x'] - 240) % 320 >= 0 && (pos['x'] - (432-margin)) % 320 <= margin*2) {
-        currentChord = [staffy, Math.floor((pos['x'] - (432-margin))/320), line]
+        currentPos = [staffy, Math.floor((pos['x'] - (432-margin))/320), line]
 
 
         if(typeof lastChord === "undefined") {
             lastChord = ""
         }
-        if(JSON.stringify(currentChord) != JSON.stringify(lastChord)) {
+        if(JSON.stringify(currentPos) != JSON.stringify(lastChord)) {
             removeOverlay(lastChord)
             overlayDrawn=false
-            drawOverlay(currentChord)
-            lastChord = currentChord
+            drawOverlay(currentPos)
+            lastChord = currentPos
 
         }
     } else {
@@ -210,10 +218,16 @@ staffCanv.addEventListener('mouseleave', function() {
     overlay.clearRect(0, 0, overlayCanv.width, overlayCanv.height)
 });
 staffCanv.addEventListener('click', function(e) {
-    score[currentChord]
+    let chord = currentPos[1]
+    //let note = toNote(currentPos)
+    if(!Array.isArray(score[chord])) {
+        score[chord] = []
+    }
+    if(score[chord].includes(currentPos)) {
+
+    }
+    score[currentPos[1]].push(currentPos)
 }
 )
-
-
 
 staffDraw()
